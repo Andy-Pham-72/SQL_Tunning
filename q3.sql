@@ -13,6 +13,9 @@ SET @v8 = 'MAT';
 -- 3. List the names of students who have taken course v4 (crsCode).
 SELECT name FROM Student WHERE id IN (SELECT studId FROM Transcript WHERE crsCode = @v4);
 
+# Check the query performance
+EXPLAIN SELECT name FROM Student WHERE id IN (SELECT studId FROM Transcript WHERE crsCode = @v4);
+
 /*
 - Bottle Neck: MySQL has to implement Full Table Scan in the subquery. 
     + Query Cost: 16.75
@@ -24,7 +27,7 @@ SELECT name FROM Student WHERE id IN (SELECT studId FROM Transcript WHERE crsCod
 CREATE INDEX trans_indx ON Transcript(crsCode, studId) USING BTREE;
 
 # Check the query performance
-SELECT name FROM Student WHERE id IN (SELECT studId FROM Transcript WHERE crsCode = @v4);
+EXPLAIN SELECT name FROM Student WHERE id IN (SELECT studId FROM Transcript WHERE crsCode = @v4);
 
 /*
 # After creating indexes on "crsCode" and "studId" columns run the query again. We don't have Full Table Scan.

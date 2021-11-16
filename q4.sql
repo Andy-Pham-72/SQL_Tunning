@@ -32,3 +32,26 @@ CREATE INDEX teach_indx ON Teaching(profId, crsCode, semester) USING BTREE;
 CREATE INDEX prof_indx ON Professor(id, name) USING BTREE;
 CREATE INDEX trans_indx ON Transcript(crsCode, studId, semester) USING BTREE;
 
+SELECT name FROM Student,
+	(SELECT studId FROM Transcript,
+		(SELECT crsCode, semester FROM Professor
+			JOIN Teaching
+			ON Professor.name = @v5 AND Professor.id = Teaching.profId) as alias1
+	WHERE Transcript.crsCode = alias1.crsCode AND Transcript.semester = alias1.semester) as alias2
+WHERE Student.id = alias2.studId;
+
+SELECT 
+    s.name
+FROM
+    Student AS s
+        JOIN
+    Transcript AS t ON s.id = t.studId
+WHERE
+    t.crsCode IN (SELECT 
+            crsCode
+        FROM
+            Professor AS p
+                JOIN
+            Teaching AS te ON p.name = @v5 AND p.id = te.profId)
+    ;
+
