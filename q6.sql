@@ -29,6 +29,9 @@ WHERE id = alias.studId;
 - Solution: Create indexes for Teaching table
 */
 
+# Drop the teach_indx which was created in the Question 4
+DROP INDEX teach_indx ON Teaching;
+
 CREATE INDEX teach_indx ON Teaching(crsCode, semester) USING BTREE;
 
 # Check the query performance
@@ -43,8 +46,9 @@ EXPLAIN SELECT name FROM Student,
 WHERE id = alias.studId;
 
 /*
-# After creating indexes on "crsCode" and "semester" columns run the query again. We don't have Full Table Scan in the Teaching table.
- And we have "Non-Unique Key Lookup" for the result in the subquery.
-	+ Query Cost: 6.89 (for Teaching table
+# After creating indexes on "crsCode" and "semester" columns in the Teaching table and run the query again. 
+We don't have Full Table Scan in the Teaching table.
+And we have "Non-Unique Key Lookup" for the result in the subquery.
+	+ Query Cost: 6.89 (for Teaching table)
     + In the expense of: 1 rows
 */

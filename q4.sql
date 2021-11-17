@@ -29,8 +29,9 @@ WHERE Student.id = alias2.studId;
 */
 
 CREATE INDEX teach_indx ON Teaching(profId, crsCode, semester) USING BTREE;
-CREATE INDEX prof_indx ON Professor(id, name) USING BTREE;
+CREATE INDEX prof_indx ON Professor(name, id) USING BTREE;
 CREATE INDEX trans_indx ON Transcript(crsCode, studId, semester) USING BTREE;
+
 
 SELECT name FROM Student,
 	(SELECT studId FROM Transcript,
@@ -40,6 +41,14 @@ SELECT name FROM Student,
 	WHERE Transcript.crsCode = alias1.crsCode AND Transcript.semester = alias1.semester) as alias2
 WHERE Student.id = alias2.studId;
 
+/*
+# After creating indexes for the "Teaching", "Professor", "Transcript" columns run the query again. We don't have Full Table Scan in the Teaching table.
+ And we have "Non-Unique Key Lookup" for the result in the subquery.
+	+ Query Cost: 1.1 
+    + In the expense of: 1 row for each table
+*/
+
+# alternate solution
 SELECT 
     s.name
 FROM
