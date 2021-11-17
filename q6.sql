@@ -30,7 +30,6 @@ WHERE id = alias.studId;
 */
 
 CREATE INDEX teach_indx ON Teaching(crsCode, semester) USING BTREE;
-DROP INDEX teach_indx ON Teaching;
 
 # Check the query performance
 EXPLAIN SELECT name FROM Student,
