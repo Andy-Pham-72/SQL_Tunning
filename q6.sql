@@ -21,6 +21,7 @@ SELECT name FROM Student,
 			(SELECT COUNT(*) FROM Course WHERE deptId = @v8 AND crsCode IN (SELECT crsCode FROM Teaching))) as alias
 WHERE id = alias.studId;
 
+
 /*
 - Bottle Neck: MySQL has to implement Full Table Scan in the subquery for the Teaching table 
     + Query Cost: 10.25
@@ -32,6 +33,7 @@ WHERE id = alias.studId;
 # Drop the teach_indx which was created in the Question 4
 DROP INDEX teach_indx ON Teaching;
 
+# Create index for Teaching table
 CREATE INDEX teach_indx ON Teaching(crsCode, semester) USING BTREE;
 
 # Check the query performance
@@ -52,3 +54,16 @@ And we have "Non-Unique Key Lookup" for the result in the subquery.
 	+ Query Cost: 6.89 (for Teaching table)
     + In the expense of: 1 rows
 */
+
+# Alternate Solution
+SELECT DISTINCT name 
+	FROM Student AS s
+    JOIN Transcript AS t
+		ON s.id = t.studId
+	WHERE t.crsCode IN
+    ( SELECT c.crsCode
+		FROM Course AS c
+        JOIN Teaching AS t2
+			ON c.crsCode = t2.crsCode
+		WHERE c.deptId = @v8
+	);
