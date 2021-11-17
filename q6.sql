@@ -30,14 +30,14 @@ WHERE id = alias.studId;
 - Solution: Create indexes for Teaching table
 */
 
-# Drop the teach_indx which was created in the Question 4
+# Drop the teach_indx which was created in the Question 4 since the order of the indexes is matter
 DROP INDEX teach_indx ON Teaching;
 
-# Create index for Teaching table
-CREATE INDEX teach_indx ON Teaching(crsCode, semester) USING BTREE;
+# Create index for Teaching table and re-order the indexes (we could also remove the "profId" if we want)
+CREATE INDEX teach_indx ON Teaching(crsCode, semester, profId) USING BTREE;
 
 # Check the query performance
-EXPLAIN SELECT name FROM Student,
+SELECT name FROM Student,
 	(SELECT studId
 	FROM Transcript
 		WHERE crsCode IN
@@ -52,7 +52,8 @@ WHERE id = alias.studId;
 We don't have Full Table Scan in the Teaching table.
 And we have "Non-Unique Key Lookup" for the result in the subquery.
 	+ Query Cost: 6.89 (for Teaching table)
-    + In the expense of: 1 rows
+	+ In the expense of: 1 rows ( for Teaching table)
+	and 19 rows (for Course table)
 */
 
 # Alternate Solution
@@ -67,3 +68,12 @@ SELECT DISTINCT name
 			ON c.crsCode = t2.crsCode
 		WHERE c.deptId = @v8
 	);
+    
+    /*
+# After creating indexes on "crsCode" and "semester" columns in the Teaching table and run the query again. 
+We don't have Full Table Scan in the Teaching table.
+And we have "Non-Unique Key Lookup" for the result in the subquery.
+	+ Query Cost: 6.89 (for Teaching table)
+    + In the expense of: 1 rows ( for Teaching table)
+    and 19 rows (for Course table)
+*/
